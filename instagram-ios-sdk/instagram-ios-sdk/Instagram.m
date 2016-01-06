@@ -34,6 +34,10 @@ static void *finishedContext            = @"finishedContext";
 @synthesize scopes = _scopes;
 @synthesize clientId = _clientId;
 
+-(instancetype)init {
+    @throw nil;
+}
+
 -(instancetype)initWithClientId:(NSString*)clientId delegate:(id<IGSessionDelegate>)delegate {
     self = [super init];
     if (self) {

@@ -17,6 +17,7 @@
 @property(nonatomic, strong) NSString* accessToken;
 @property(nonatomic, weak) id<IGSessionDelegate> sessionDelegate;
 
+-(instancetype)init NS_UNAVAILABLE;
 -(instancetype)initWithClientId:(NSString*)clientId delegate:(id<IGSessionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
 -(void)authorize:(NSArray*)scopes;
