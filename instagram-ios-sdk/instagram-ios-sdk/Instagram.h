@@ -17,7 +17,7 @@
 @property(nonatomic, strong) NSString* accessToken;
 @property(nonatomic, weak) id<IGSessionDelegate> sessionDelegate;
 
--(id)initWithClientId:(NSString*)clientId delegate:(id<IGSessionDelegate>)delegate;
+-(instancetype)initWithClientId:(NSString*)clientId delegate:(id<IGSessionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
 -(void)authorize:(NSArray*)scopes;
 
@@ -25,7 +25,7 @@
 
 -(void)logout;
 
--(BOOL)isSessionValid;
+@property (NS_NONATOMIC_IOSONLY, getter=isSessionValid, readonly) BOOL sessionValid;
 
 -(IGRequest*)requestWithParams:(NSMutableDictionary*)params
                       delegate:(id<IGRequestDelegate>)delegate;

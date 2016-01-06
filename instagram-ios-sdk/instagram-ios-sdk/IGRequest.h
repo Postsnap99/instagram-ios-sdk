@@ -11,13 +11,12 @@
 @protocol IGRequestDelegate;
 
 
-enum {
+typedef NS_ENUM(NSUInteger, IGRequestState) {
     kIGRequestStateReady,
     kIGRequestStateLoading,
     kIGRequestStateComplete,
     kIGRequestStateError
 };
-typedef NSUInteger IGRequestState;
 
 extern NSString* const InstagramErrorDomain;
 
@@ -46,7 +45,7 @@ extern NSString* const InstagramErrorDomain;
                          delegate:(id<IGRequestDelegate>)delegate
                        requestURL:(NSString*)url;
 
--(BOOL)loading;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL loading;
 
 -(void)connect;
 

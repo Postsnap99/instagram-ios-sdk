@@ -34,7 +34,7 @@ static void *finishedContext            = @"finishedContext";
 @synthesize scopes = _scopes;
 @synthesize clientId = _clientId;
 
--(id)initWithClientId:(NSString*)clientId delegate:(id<IGSessionDelegate>)delegate {
+-(instancetype)initWithClientId:(NSString*)clientId delegate:(id<IGSessionDelegate>)delegate {
     self = [super init];
     if (self) {
         self.clientId = clientId;
@@ -93,9 +93,9 @@ static void *finishedContext            = @"finishedContext";
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (context == finishedContext) {
         IGRequest* _request = (IGRequest*)object;
-        IGRequestState requestState = [_request state];
+        IGRequestState requestState = _request.state;
         if (requestState == kIGRequestStateError) {
-            NSString *errType = (NSString *)[[_request.error userInfo] objectForKey:@"error_type"];
+            NSString *errType = (NSString *)(_request.error).userInfo[@"error_type"];
             if (errType && [errType isEqualToString:@"OAuthAccessTokenException"]) {
                 [self logout];
             }
@@ -138,9 +138,9 @@ static void *finishedContext            = @"finishedContext";
 	NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
 	for (NSString *pair in pairs) {
 		NSArray *kv = [pair componentsSeparatedByString:@"="];
-		NSString *val = [[kv objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+		NSString *val = [kv[1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         
-		[params setObject:val forKey:[kv objectAtIndex:0]];
+		params[kv[0]] = val;
 	}
     return params;
 }
@@ -155,13 +155,13 @@ static void *finishedContext            = @"finishedContext";
 
 - (BOOL)handleOpenURL:(NSURL *)url {
     // If the URL's structure doesn't match the structure used for Instagram authorization, abort.
-    if (![[url absoluteString] hasPrefix:[self getOwnBaseUrl]]) {
+    if (![url.absoluteString hasPrefix:[self getOwnBaseUrl]]) {
         return NO;
     }
     
-    NSString *query = [url fragment];
+    NSString *query = url.fragment;
     if (!query) {
-        query = [url query];
+        query = url.query;
     }
     
     NSDictionary *params = [self parseURLParams:query];
@@ -190,12 +190,12 @@ static void *finishedContext            = @"finishedContext";
 
 -(IGRequest*)requestWithParams:(NSMutableDictionary*)params
                       delegate:(id<IGRequestDelegate>)delegate {
-    if ([params objectForKey:@"method"] == nil) {
+    if (params[@"method"] == nil) {
         NSLog(@"API Method must be specified");
         return nil;
     }
     
-    NSString * methodName = [params objectForKey:@"method"];
+    NSString * methodName = params[@"method"];
     [params removeObjectForKey:@"method"];
     
     return [self requestWithMethodName:methodName

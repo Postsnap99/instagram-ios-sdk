@@ -78,7 +78,7 @@ NSString* const InstagramErrorDomain = @"instagramErrorDomain";
         
         NSString* escaped_value = (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(
                                                                                       NULL, /* allocator */
-                                                                                      (__bridge CFStringRef)[params objectForKey:key],
+                                                                                      (__bridge CFStringRef)params[key],
                                                                                       NULL, /* charactersToLeaveUnescaped */
                                                                                       (CFStringRef)@"!*'();:@&=$,/?%#[]",
                                                                                       kCFStringEncodingUTF8);
@@ -108,7 +108,7 @@ NSString* const InstagramErrorDomain = @"instagramErrorDomain";
         if (([[_params valueForKey:key] isKindOfClass:[UIImage class]])
             ||([[_params valueForKey:key] isKindOfClass:[NSData class]])) {
             
-            [dataDictionary setObject:[_params valueForKey:key] forKey:key];
+            dataDictionary[key] = [_params valueForKey:key];
             continue;
             
         }
@@ -122,7 +122,7 @@ NSString* const InstagramErrorDomain = @"instagramErrorDomain";
         [self utfAppendBody:body data:endLine];
     }
     
-    if ([dataDictionary count] > 0) {
+    if (dataDictionary.count > 0) {
         for (id key in dataDictionary) {
             NSObject *dataParam = [dataDictionary valueForKey:key];
             if ([dataParam isKindOfClass:[UIImage class]]) {
@@ -159,20 +159,18 @@ NSString* const InstagramErrorDomain = @"instagramErrorDomain";
 - (id)parseJsonResponse:(NSData*)data error:(NSError**)error {
     id result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
     
-    NSDictionary* meta = (NSDictionary*)[result objectForKey:@"meta"];
-    if ( meta && [[meta objectForKey:@"code"] integerValue] == 200) {
+    NSDictionary* meta = (NSDictionary*)result[@"meta"];
+    if ( meta && [meta[@"code"] integerValue] == 200) {
         //result = [result objectForKey:@"data"];
     } else if (error != nil) {
         if (meta) {
-            *error = [self formError:[[meta objectForKey:@"code"] integerValue]
-                            userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[meta objectForKey:@"error_type"], @"error_type",
-                                      [meta objectForKey:@"error_message"], @"error_message",
-                                      nil]];
+            *error = [self formError:[meta[@"code"] integerValue]
+                            userInfo:@{@"error_type": meta[@"error_type"],
+                                      @"error_message": meta[@"error_message"]}];
         } else {
             *error = [self formError:kGeneralErrorCode
-                            userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Unknown", @"error_type",
-                                      @"This operation can not be completed", @"error_message",
-                                      nil]];
+                            userInfo:@{@"error_type": @"Unknown",
+                                      @"error_message": @"This operation can not be completed"}];
         }
     }
     return result;
@@ -228,12 +226,12 @@ NSString* const InstagramErrorDomain = @"instagramErrorDomain";
                                                        timeoutInterval:kTimeoutInterval];
     [request setValue:kUserAgent forHTTPHeaderField:@"User-Agent"];
     
-    [request setHTTPMethod:self.httpMethod];
+    request.HTTPMethod = self.httpMethod;
     if ([self.httpMethod isEqualToString: @"POST"]) {
         NSString* contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", kStringBoundary];
         [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
         
-        [request setHTTPBody:[self generatePostBody]];
+        request.HTTPBody = [self generatePostBody];
     }
     
     _connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
