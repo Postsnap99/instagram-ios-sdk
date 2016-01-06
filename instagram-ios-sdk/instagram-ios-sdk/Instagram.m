@@ -126,17 +126,11 @@ static void *finishedContext            = @"finishedContext";
                                    @"token", @"response_type",
                                    [self getOwnBaseUrl], @"redirect_uri",
                                    nil];
-    
-    NSString *loginDialogURL    = [kDialogBaseURL stringByAppendingString:kLogin];
-    
+
     if (self.scopes != nil) {
         NSString* scope = [self.scopes componentsJoinedByString:@"+"];
         [params setValue:scope forKey:@"scope"];
     }
-    
-    BOOL didOpenOtherApp        = NO;
-    NSString *igAppUrl          = [IGRequest serializeURL:loginDialogURL params:params];
-    didOpenOtherApp             = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:igAppUrl]];
 }
 
 - (NSDictionary*)parseURLParams:(NSString *)query {

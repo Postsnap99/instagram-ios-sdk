@@ -162,7 +162,7 @@ NSString* const InstagramErrorDomain = @"instagramErrorDomain";
     NSDictionary* meta = (NSDictionary*)[result objectForKey:@"meta"];
     if ( meta && [[meta objectForKey:@"code"] integerValue] == 200) {
         //result = [result objectForKey:@"data"];
-    } else {
+    } else if (error != nil) {
         if (meta) {
             *error = [self formError:[[meta objectForKey:@"code"] integerValue]
                             userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[meta objectForKey:@"error_type"], @"error_type",
