@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 47;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -129,7 +129,7 @@
 				ORGANIZATIONNAME = IQUII;
 			};
 			buildConfigurationList = 664E5CFC153E8F2400967BB1 /* Build configuration list for PBXProject "instagram-ios-sdk" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 6.3";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
